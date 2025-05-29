@@ -1,13 +1,25 @@
 import pygame
 import random
+from pygame import mixer
 pygame.init()
 screen=pygame.display.set_mode((800,600))
 run=True
 #Title
 pygame.display.set_caption("---SPACE---")
 
-#Background
+#Background and sound effects
 bg = pygame.transform.scale(pygame.image.load('background.jpg'), (800, 600))
+laser_sound = mixer.Sound('laser.mp3')
+hit_sound = mixer.Sound('hit.mp3')
+
+#sound
+mixer.music.load('backgroundmusic.mp3')
+mixer.music.play(-1)  # -1 means the music will loop indefinitely
+mixer.music.set_volume(0.3)  # Set volume (0.0 to 1.0)  
+
+
+pygame.display.set_caption("Space Shooter Game")
+
 
 #Icon
 icon=pygame.image.load('startup.png')
@@ -66,7 +78,7 @@ def  fire_bullet(x,y):
 
 def isCollision(enemy_x, enemy_y, bullet_x, bullet_y):
     distance = ((enemy_x - bullet_x) ** 2 + (enemy_y - bullet_y) ** 2) ** 0.5
-    if distance < 27:  # Adjust this value based on the size of your enemy and bullet images
+    if distance < 27:  
         return True
     else:
         return False
@@ -74,7 +86,7 @@ def isCollision(enemy_x, enemy_y, bullet_x, bullet_y):
 #Game Loop
 while run:
     screen.blit(bg, (0, 0))
-    dark_overlay = pygame.Surface((800, 600))     # Size of your screen
+    dark_overlay = pygame.Surface((800, 600))     # Size of the screen
     dark_overlay.set_alpha(100)                   # 0 = fully transparent, 255 = fully opaque
     dark_overlay.fill((0, 0, 0))                  # Must fill with black
     screen.blit(dark_overlay, (0, 0))
@@ -89,9 +101,10 @@ while run:
                 pl_change=-1.5
             if event.key==pygame.K_SPACE:
                 if bullet_state=="ready":
+                    laser_sound.play()
                     bullet_x   = plx
                     fire_bullet(bullet_x,bullet_y)
-
+ 
             
         if event.type==pygame.KEYUP:
             if event.key==pygame.K_RIGHT or event.key==pygame.K_LEFT:
@@ -104,18 +117,30 @@ while run:
         plx=736
 
     for i in range(enemy_count):
+
+        #Game Over Condition
+        if eny[i] > 455:
+            for j in range(enemy_count):
+                eny[j] = 2000
+            font_game_over = pygame.font.Font('freesansbold.ttf', 64)
+            game_over_text = font_game_over.render("GAME OVER", True, (255, 0, 0))
+            screen.blit(game_over_text, (200, 250))  # Center the text
+            pygame.display.update()  
+            pygame.time.delay(2000)
+            run = False
         #Enemy Movement
         enx[i] += enx_change[i]
         if enx[i] <= 0:
-            enx_change[i] = 1
+            enx_change[i] = 2
             eny[i] += eny_change[i]
         elif enx[i] >= 736:
-            enx_change[i] = -1
+            enx_change[i] = -2
             eny[i] += eny_change[i]
           
         #Collision
         collision = isCollision(enx[i], eny[i], bullet_x, bullet_y)
         if collision:
+            hit_sound.play()
             bullet_y = 480
             bullet_state = "ready"
             score+=1
@@ -133,8 +158,7 @@ while run:
     if bullet_y<=0: 
         bullet_y=480
         bullet_state="ready"
-    if bullet_state=="ready":
-        bullet_y=480    
+  
   
     player(plx,ply)
     show_score(10, 10)  # Display the score at position (10, 10)
