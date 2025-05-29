@@ -4,9 +4,9 @@ A simple Space Invaders-style arcade game built using Python and Pygame. Control
 ---
 ## 📸 Screenshots
 
-![Image 1](img1.png)
-![Image 2](img2.png)
-![Image 3](img3.png)
+<img src="img1.png" alt="Image 1" width="300" />
+<img src="img2.png" alt="Image 2" width="300" />
+<img src="img3.png" alt="Image 3" width="300" />
 
 ---
 
@@ -28,8 +28,9 @@ A simple Space Invaders-style arcade game built using Python and Pygame. Control
 
 ```bash
 pip install pygame
+```
 
-🛠️ How It Works
+## 🛠️ How It Works
 Uses a game loop to update game state and render graphics.
 Enemy and player positions are updated every frame.
 Bullet collisions are detected using distance-based collision detection.
